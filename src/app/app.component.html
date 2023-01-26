@@ -1,0 +1,99 @@
+<style>
+  input.ng-dirty.ng-invalid {border: 2px solid red}
+  input.ng-dirty.ng-valid {border: 3px solid green}
+</style>
+
+<div class="m-2">
+  model danych: {{ jsonProduct }}
+  <div class="bg-info text-white p-2">
+    Wybrany produkt: {{ selectedProduct || '(brak)' }}
+  </div>
+  <form novalidate #form="ngForm" (ngSubmit)="submitForm(form)">
+    <div
+      class="bg-danger text-white p-2 mt-2"
+      *ngIf="formSubmitted && form.invalid"
+    >
+      Wystąpiły błędy w formularzu
+    </div>
+    <div class="form-group">
+      <label>Produkt</label>
+      <input
+        class="form-control"
+        name="name"
+        #name="ngModel"
+        [(ngModel)]="newProduct.name"
+        required
+        minlength="5"
+        pattern="^[A-Za-z ł]+$"
+      />
+      <ul
+        class="text-danger list-unstyled"
+        *ngIf="(formSubmitted || name.dirty) && name.invalid"
+      >
+        <li *ngFor="let error of getValidationMessages(name)">{{ error }}</li>
+      </ul>
+    </div>
+    <div class="form-group">
+      <label>Cena</label>
+      <input
+        class="form-control"
+        name="price"
+        #price="ngModel"
+        [(ngModel)]="newProduct.price"
+        required
+        pattern="^[0-9\.]+$"
+      />
+      <ul
+        class="text-danger list-unstyled"
+        *ngIf="(formSubmitted || price.dirty) && price.invalid"
+      >
+        <li *ngFor="let error of getValidationMessages(price)">{{ error }}</li>
+      </ul>
+    </div>
+    <button
+      class="btn btn-primary"
+      type="submit"
+      [disabled]="formSubmitted && form.invalid"
+      [class.btn-secondary]="formSubmitted && form.invalid"
+    >
+      Dodaj
+    </button>
+  </form>
+
+  <table class="table table-sm table-bordered mt-1 text-dark">
+    <tr class="text-dark"></tr>
+    <tr>
+      <th></th>
+      <th>Produkt</th>
+      <th>Kategoria</th>
+      <th>Cena</th>
+    </tr>
+    <tr
+      *ngFor="let item of getProducts(); let index = index; trackBy: getKey"
+      [class.bg-info]="getSelected(item)"
+    >
+      <td (mouseover)="selectedProduct = item.name">{{ index + 1 }}</td>
+      <td>{{ item.name }}</td>
+      <td>{{ item.category }}</td>
+      <td>{{ item.price }}</td>
+    </tr>
+  </table>
+  <div class="bg-info p-2">
+    Cena po zaokrągleniu wynosi {{ getProductPrice(2) }} zł.
+  </div>
+  <div class="form-group">
+    <label>Nazwa przedmiotu</label>
+    <input class="form-control" [(ngModel)]="newProduct.name" />
+  </div>
+  <div class="form-group">
+    <label>Kategoria</label>
+    <input class="form-control" [(ngModel)]="newProduct.category" />
+  </div>
+  <div class="form-group">
+    <label>Cena</label>
+    <input class="form-control" [(ngModel)]="newProduct.price" />
+  </div>
+  <button class="btn btn-primary" (click)="addProduct(newProduct)">
+    Dodaj
+  </button>
+</div>
