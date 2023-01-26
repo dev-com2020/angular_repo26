@@ -1,5 +1,6 @@
 import { ApplicationRef, Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { ProductFormGroup } from './form.model';
 import { Product } from './product.model';
 import { Model } from './repository.model';
 
@@ -10,6 +11,7 @@ import { Model } from './repository.model';
 })
 export class AppComponent {
   model: Model = new Model();
+  formGroup: ProductFormGroup = new ProductFormGroup();
 
   constructor(ref: ApplicationRef) {
     (<any>window).appRef = ref;
@@ -18,12 +20,15 @@ export class AppComponent {
 
   formSubmitted: boolean = false;
 
-  submitForm(form: NgForm) {
+  submitForm() {
+    Object.keys(this.formGroup.controls).forEach(
+      (c) => (this.newProduct[c] = this.formGroup.controls[c].value)
+    );
     this.formSubmitted = true;
-    if (form.valid) {
+    if (this.formGroup.valid) {
       this.addProduct(this.newProduct);
       this.newProduct = new Product();
-      form.reset();
+      this.formGroup.reset();
       this.formSubmitted = false;
     }
   }
